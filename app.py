@@ -2,16 +2,15 @@
 # coding: utf-8
 
 # In[4]:
-
 import streamlit as st
 import pandas as pd
 from swh_core import (
-    Constants, HotWaterDemandCalculator, SystemSizer, EconomicAnalyzer, CarbonEmissionCalculator, DataLoader
+    Constants, HotWaterDemandCalculator, SystemSizer, EconomicAnalyzer, CarbonEmissionCalculator
 )
 
 st.set_page_config(page_title="Solar Water Heating Sizing Tool", layout="wide")
 
-# Custom CSS for font, color, borders, and output value
+# --- Custom CSS for Times New Roman fonts and borders ---
 st.markdown("""
     <style>
         html, body, [class*="css"]  {
@@ -69,7 +68,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ward_data = pd.read_csv("ward_solar_output.csv")
-data_loader = DataLoader("GHI.tif", "TEMP.tif")
 
 col1, col2, col3 = st.columns([2, 2, 3])
 
