@@ -96,6 +96,7 @@ with col1:
             <li>Installation Cost: <b>20%</b> of equipment cost (not user-editable)</li>
             <li>Annual Maintenance: <b>5%</b> of equipment cost per year (not user-editable)</li>
             <li>Desired Payback Period: <b>5 years</b> (not user-editable)</li>
+            <li>Discount/Inflation Rate: <b>8%</b> (not user-editable)</li>
         </ul>
     </div>
     ''', unsafe_allow_html=True)
@@ -236,11 +237,12 @@ with col4:
         if desired_temp == avg_temp:
             st.error("Desired Hot Water Temp cannot equal Average Ambient Temp.")
             st.stop()
-        # Use hidden defaults for system_type, install_pct, maint_pct, finance_years
+        # Use hidden defaults for system_type, install_pct, maint_pct, finance_years, discount_rate
         system_type = 'Vacuum Tubes Collector'
         installation_pct = 0.20
         maintenance_pct = 0.05
         finance_years = 5
+        discount_rate = 0.08
 
         daily_demand = HotWaterDemandCalculator.calculate_demand(building_type, quantity, desired_temp, occupancy_rate)
         sizing = SystemSizer().size_system(daily_demand, avg_irradiance, avg_temp)
