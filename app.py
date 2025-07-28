@@ -51,7 +51,7 @@ st.markdown("""
         .output-label {
             min-width: 250px;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 14px;
         }
         .output-value {
             display: inline-block;
