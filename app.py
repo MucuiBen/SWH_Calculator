@@ -103,7 +103,7 @@ if "run_btn" not in state:
 with col2:
     st.markdown('''
     <div class="bordered-box">
-        <div class="column-heading">Location and HWD Demand Details</div>
+        <div class="column-heading">Location and Hot Water Demand Details</div>
     ''', unsafe_allow_html=True)
 
     c1, c2 = st.columns([1, 2])
@@ -153,7 +153,7 @@ with col2:
 with col3:
     st.markdown('''
     <div class="bordered-box">
-        <div class="column-heading"> SWH System and Economic Parameters</div>
+        <div class="column-heading"> System Type selection and Economic Parameters</div>
     ''', unsafe_allow_html=True)
 
     st.markdown('<div class="section-header">System</div>', unsafe_allow_html=True)
