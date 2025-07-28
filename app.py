@@ -73,23 +73,25 @@ col1, col2, col3 = st.columns([2, 2, 3])
 
 # --- Column 1: App Description ---
 with col1:
-    st.markdown('<div class="bordered-box">', unsafe_allow_html=True)
-    st.markdown('<div class="column-heading">App Description</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <ul>
-      <li>This Calculator is based on Draft Kenya SWH Regulation of 2024.</li>
-      <li>It's tailored for the Kenyan market.</li>
-      <li>User or designers can override all parameters.</li>
-      <li>The Tool Calculates system size, Economics Analysis, and CO₂ reduction Potential.</li>
-      <li> The Results update as you change your system input Paramters.</li>
-    </ul>
-    """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('''
+    <div class="bordered-box">
+        <div class="column-heading">App Description</div>
+        <ul>
+            <li>This Calculator is based on Draft Kenya SWH Regulation of 2024.</li>
+            <li>It's tailored for the Kenyan market.</li>
+            <li>User or designers can override all parameters.</li>
+            <li>The Tool Calculates system size, Economics Analysis, and CO₂ reduction Potential.</li>
+            <li>The Results update as you change your system input Paramters.</li>
+        </ul>
+    </div>
+    ''', unsafe_allow_html=True)
 
 # --- Column 2: Inputs ---
 with col2:
-    st.markdown('<div class="bordered-box">', unsafe_allow_html=True)
-    st.markdown('<div class="column-heading">Select Required Inputs</div>', unsafe_allow_html=True)
+    st.markdown('''
+    <div class="bordered-box">
+        <div class="column-heading">Select Required Inputs</div>
+    ''', unsafe_allow_html=True)
 
     # Location
     ward_query = st.text_input("Search Admin Ward", "")
@@ -141,8 +143,10 @@ with col2:
 
 # --- Column 3: Outputs ---
 with col3:
-    st.markdown('<div class="bordered-box">', unsafe_allow_html=True)
-    st.markdown('<div class="column-heading">System Outputs</div>', unsafe_allow_html=True)
+    st.markdown('''
+    <div class="bordered-box">
+        <div class="column-heading">System Outputs</div>
+    ''', unsafe_allow_html=True)
     if run_btn and irradiance is not None and ambient_temp is not None:
         daily_demand = HotWaterDemandCalculator.calculate_demand(building_type, quantity, desired_temp, occupancy_rate)
         sizing = SystemSizer().size_system(daily_demand, irradiance, ambient_temp)
