@@ -55,7 +55,7 @@ st.markdown("""
         }
         .output-value {
             display: inline-block;
-            font-size: 18px;
+            font-size: 14px;
             background: #e9f3ff;
             border: 2px solid #4682B4;
             border-radius: 6px;
@@ -164,7 +164,7 @@ with col3:
         ).calculate_emissions_reduction(annual_energy_savings)
 
         outputs = [
-            ("Daily Demand (L/day)", f"{daily_demand:.2f}"),
+            ("Hot Water Demand (L/day)", f"{daily_demand:.2f}"),
             ("Collector Area (m²)", f"{sizing['collector_area_m2']}"),
             ("Tank Size (L)", f"{sizing['tank_size_liters']}"),
             ("Equipment Cost (Ksh)", f"{econ_result['equipment_cost']:,}"),
