@@ -83,7 +83,7 @@ col1, col2, col3, col4 = st.columns([1, 2, 2, 2])
 with col1:
     st.markdown('''
     <div class="bordered-box">
-        <div class="column-heading">App Description</div>
+        <div class="column-heading">Overview of the Calculator</div>
         <ul>
             <li>This Calculator is based on Draft Kenya SWH Regulation of 2024.</li>
             <li>It's tailored for the Kenyan market.</li>
@@ -103,12 +103,12 @@ if "run_btn" not in state:
 with col2:
     st.markdown('''
     <div class="bordered-box">
-        <div class="column-heading">General & Demand Inputs</div>
+        <div class="column-heading">Location and HWD Demand Details</div>
     ''', unsafe_allow_html=True)
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Location(Admin Ward) :")
+        st.write("Clients Location(Admin Ward) :")
     with c2:
         ward_selected_name = st.selectbox("", ward_list, key="ward_select")
     ward_selected = ward_data[ward_data['Ward'] == ward_selected_name].iloc[0] if ward_selected_name else None
@@ -153,14 +153,14 @@ with col2:
 with col3:
     st.markdown('''
     <div class="bordered-box">
-        <div class="column-heading">System & Economic Inputs</div>
+        <div class="column-heading"> SWH System and Economic Parameters</div>
     ''', unsafe_allow_html=True)
 
     st.markdown('<div class="section-header">System</div>', unsafe_allow_html=True)
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("SWH System Type :")
+        st.write("System Type :")
     with c2:
         system_type = st.selectbox("", ['Flat-Plate Collector', 'Vacuum Tubes Collector'], key="system_type")
 
@@ -174,7 +174,7 @@ with col3:
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Electricity Tariff (Ksh/kWh) :")
+        st.write("Electricity Cost(Ksh/kWh) :")
     with c2:
         user_tariff = st.number_input("", min_value=5.0, max_value=100.0, value=28.69, key="user_tariff")
 
@@ -186,7 +186,7 @@ with col3:
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Annual Maintenance cost (in %) :")
+        st.write("Annual system Maintenance cost (in %) :")
     with c2:
         user_maint_pct = st.number_input("", min_value=0, max_value=20, value=5, key="maint_pct") / 100
 
