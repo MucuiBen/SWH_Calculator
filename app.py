@@ -8,20 +8,20 @@ from swh_core import (
     Constants, HotWaterDemandCalculator, SystemSizer, EconomicAnalyzer, CarbonEmissionCalculator
 )
 
-st.set_page_config(page_title="Solar Water Heating Sizing Tool", layout="wide")
+st.set_page_config(page_title="Solar Water Heating Sizing Calculator", layout="wide")
 
 st.markdown("""
     <style>
         html, body, [class*="css"]  {
             font-family: 'Times New Roman', Times, serif !important;
-            font-size: 18px !important;
+            font-size: 14px !important;
         }
         .main-title {
             font-size: 20px !important;
             font-weight: bold !important;
         }
         .column-heading {
-            font-size: 20px !important;
+            font-size: 24px !important;
             font-weight: bold !important;
             font-family: 'Times New Roman', Times, serif !important;
             text-align: left !important;
