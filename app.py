@@ -76,7 +76,7 @@ st.markdown("""
 ward_data = pd.read_csv("ward_solar_output.csv")
 ward_list = ward_data['Ward'].sort_values().unique().tolist()
 
-col1, col2, col3, col4 = st.columns([1, 2, 2, 2])
+col1, col2, col3, col4 = st.columns([2, 2, 2, 2])
 
 # --- Column 1: App Description & Assumptions ---
 with col1:
