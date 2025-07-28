@@ -10,7 +10,7 @@ from swh_core import (
 
 st.set_page_config(page_title="Solar Water Heating Sizing Tool", layout="wide")
 
-# --- Custom CSS for Times New Roman fonts and borders ---
+# --- Custom CSS ---
 st.markdown("""
     <style>
         html, body, [class*="css"]  {
@@ -24,14 +24,12 @@ st.markdown("""
         .column-heading {
             font-size: 20px !important;
             font-weight: bold !important;
-            font-family: 'Times New Roman', Times, serif !important;
             text-align: left !important;
             margin-bottom: 15px;
         }
         .section-header {
             font-size: 18px !important;
             font-weight: bold !important;
-            font-family: 'Times New Roman', Times, serif !important;
             margin-top: 10px;
             text-align: left !important;
         }
@@ -46,7 +44,6 @@ st.markdown("""
             display: flex;
             flex-direction: row;
             align-items: center;
-            font-family: 'Times New Roman', Times, serif !important;
             margin-bottom: 12px;
         }
         .output-label {
@@ -62,8 +59,7 @@ st.markdown("""
             border-radius: 6px;
             padding: 2px 18px;
             margin-left: 16px;
-            font-family: 'Times New Roman', Times, serif !important;
-            color: #002147 !important; /* Navy Blue */
+            color: #002147 !important;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -71,7 +67,7 @@ st.markdown("""
 ward_data = pd.read_csv("ward_solar_output.csv")
 ward_list = ward_data['Ward'].sort_values().unique().tolist()
 
-col1, col2, col3 = st.columns([2, 2, 3])
+col1, col2, col3 = st.columns([1, 3, 2])
 
 # --- Column 1: App Description ---
 with col1:
@@ -96,19 +92,25 @@ with col2:
     ''', unsafe_allow_html=True)
 
     # Location: Dropdown with search
-    ward_selected_name = st.selectbox("Search Admin Ward", ward_list, key="ward_select")
+    row1c1, row1c2 = st.columns([1, 3])
+    with row1c1:
+        st.markdown("Admin Ward :")
+    with row1c2:
+        ward_selected_name = st.selectbox("", ward_list, key="ward_select")
     ward_selected = ward_data[ward_data['Ward'] == ward_selected_name].iloc[0] if ward_selected_name else None
-
     if ward_selected is not None:
         irradiance = ward_selected['Irradiance_kWh/m2/day']
         ambient_temp = ward_selected['Ambient_Temperature_C']
-        st.success(f"Loaded: {ward_selected['Ward']} (GHI={irradiance}, Temp={ambient_temp})")
     else:
         irradiance, ambient_temp = None, None
 
-    # --- Hot Water Demand Inputs
     st.markdown('<div class="section-header">Hot Water Demand Input Parameters</div>', unsafe_allow_html=True)
-    building_type = st.selectbox("Building Type", ['residential', 'educational', 'health', 'commercial_hotel', 'restaurant', 'laundry'])
+    # Horizontal for Building Type
+    row2c1, row2c2 = st.columns([1, 3])
+    with row2c1:
+        st.markdown("Building Type :")
+    with row2c2:
+        building_type = st.selectbox("", ['residential', 'educational', 'health', 'commercial_hotel', 'restaurant', 'laundry'])
     quantity_label = {
         'residential': 'People',
         'educational': 'Students',
@@ -117,27 +119,93 @@ with col2:
         'restaurant': 'Meals/day',
         'laundry': 'Kg laundry/day'
     }[building_type]
-    quantity = st.number_input(quantity_label, min_value=1, value=4)
-    desired_temp = st.number_input("Hot Water Temp (°C)", min_value=35, max_value=80, value=60)
-    occupancy_rate = st.number_input("Occupancy (%)", min_value=1, max_value=100, value=100) / 100
+    row3c1, row3c2 = st.columns([1, 3])
+    with row3c1:
+        st.markdown(f"{quantity_label} :")
+    with row3c2:
+        quantity = st.number_input("", min_value=1, value=4)
+    row4c1, row4c2 = st.columns([1, 3])
+    with row4c1:
+        st.markdown("Hot Water Temp (°C) :")
+    with row4c2:
+        desired_temp = st.number_input("", min_value=35, max_value=80, value=60)
+    row5c1, row5c2 = st.columns([1, 3])
+    with row5c1:
+        st.markdown("Occupancy (%) :")
+    with row5c2:
+        occupancy_rate = st.number_input("", min_value=1, max_value=100, value=100) / 100
 
-    # --- System & Economic Inputs
     st.markdown('<div class="section-header">System Type & Economic Inputs Parameters</div>', unsafe_allow_html=True)
-    system_type = st.selectbox("SWH System Type", ['Flat-Plate Collector', 'Vacuum Tubes Collector'])
-    user_tariff = st.number_input("Electricity Tariff (Ksh/kWh)", min_value=5.0, max_value=100.0, value=28.69)
-    user_cost_per_liter = st.number_input("Tank Cost (Ksh/liter)", min_value=50, max_value=1000, value=585 if system_type == 'Flat-Plate Collector' else 565)
-    user_install_pct = st.number_input("Installation (%)", min_value=0, max_value=50, value=20) / 100
-    user_maint_pct = st.number_input("Annual Maintenance (%)", min_value=0, max_value=20, value=5) / 100
-    finance_years = st.number_input("NPV/Payback (years)", min_value=1, max_value=15, value=7)
-    discount_rate = st.number_input("Discount Rate (%)", min_value=1, max_value=20, value=8) / 100
+    row6c1, row6c2 = st.columns([1, 3])
+    with row6c1:
+        st.markdown("SWH System Type :")
+    with row6c2:
+        system_type = st.selectbox("", ['Flat-Plate Collector', 'Vacuum Tubes Collector'])
+    row7c1, row7c2 = st.columns([1, 3])
+    with row7c1:
+        st.markdown("Electricity Tariff (Ksh/kWh) :")
+    with row7c2:
+        user_tariff = st.number_input("", min_value=5.0, max_value=100.0, value=28.69)
+    row8c1, row8c2 = st.columns([1, 3])
+    with row8c1:
+        st.markdown("Tank Cost (Ksh/liter) :")
+    with row8c2:
+        user_cost_per_liter = st.number_input("", min_value=50, max_value=1000, value=585 if system_type == 'Flat-Plate Collector' else 565)
+    row9c1, row9c2 = st.columns([1, 3])
+    with row9c1:
+        st.markdown("Installation (%) :")
+    with row9c2:
+        user_install_pct = st.number_input("", min_value=0, max_value=50, value=20) / 100
+    row10c1, row10c2 = st.columns([1, 3])
+    with row10c1:
+        st.markdown("Annual Maintenance (%) :")
+    with row10c2:
+        user_maint_pct = st.number_input("", min_value=0, max_value=20, value=5) / 100
+    row11c1, row11c2 = st.columns([1, 3])
+    with row11c1:
+        st.markdown("NPV/Payback (years) :")
+    with row11c2:
+        finance_years = st.number_input("", min_value=1, max_value=15, value=7)
+    row12c1, row12c2 = st.columns([1, 3])
+    with row12c1:
+        st.markdown("Discount Rate (%) :")
+    with row12c2:
+        discount_rate = st.number_input("", min_value=1, max_value=20, value=8) / 100
 
-    # --- Fuel Type
     st.markdown('<div class="section-header">Fuel Type</div>', unsafe_allow_html=True)
-    fuel_type = st.selectbox("Fuel Replaced", ['electricity', 'lpg'])
-    grid_emission_start = st.number_input("Grid Start Emission Factor (ton/MWh)", min_value=0.2, max_value=1.0, value=0.425) if fuel_type == 'electricity' else None
-    grid_emission_end = st.number_input("Grid End Emission Factor (ton/MWh)", min_value=0.1, max_value=1.0, value=0.25) if fuel_type == 'electricity' else None
-    lpg_emission = st.number_input("LPG Emission Factor (kgCO2/kg)", min_value=1.0, max_value=5.0, value=3.0) if fuel_type == 'lpg' else None
-    annual_lpg_savings = st.number_input("Annual LPG Savings (kg/year)", min_value=1, max_value=5000, value=5000) if fuel_type == 'lpg' else None
+    row13c1, row13c2 = st.columns([1, 3])
+    with row13c1:
+        st.markdown("Fuel Replaced :")
+    with row13c2:
+        fuel_type = st.selectbox("", ['electricity', 'lpg'])
+    if fuel_type == 'electricity':
+        row14c1, row14c2 = st.columns([1, 3])
+        with row14c1:
+            st.markdown("Grid Start Emission Factor (ton/MWh) :")
+        with row14c2:
+            grid_emission_start = st.number_input("", min_value=0.2, max_value=1.0, value=0.425)
+        row15c1, row15c2 = st.columns([1, 3])
+        with row15c1:
+            st.markdown("Grid End Emission Factor (ton/MWh) :")
+        with row15c2:
+            grid_emission_end = st.number_input("", min_value=0.1, max_value=1.0, value=0.25)
+    else:
+        grid_emission_start = None
+        grid_emission_end = None
+    if fuel_type == 'lpg':
+        row16c1, row16c2 = st.columns([1, 3])
+        with row16c1:
+            st.markdown("LPG Emission Factor (kgCO2/kg) :")
+        with row16c2:
+            lpg_emission = st.number_input("", min_value=1.0, max_value=5.0, value=3.0)
+        row17c1, row17c2 = st.columns([1, 3])
+        with row17c1:
+            st.markdown("Annual LPG Savings (kg/year) :")
+        with row17c2:
+            annual_lpg_savings = st.number_input("", min_value=1, max_value=5000, value=5000)
+    else:
+        lpg_emission = None
+        annual_lpg_savings = None
 
     run_btn = st.button("Run Full Analysis")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -148,6 +216,20 @@ with col3:
     <div class="bordered-box">
         <div class="column-heading">System Outputs</div>
     ''', unsafe_allow_html=True)
+
+    # Show GHI and Temp as separate output values (on top)
+    if irradiance is not None and ambient_temp is not None:
+        st.markdown(
+            f'<div class="output-row"><span class="output-label">Avg Irradiance (kWh/m²/day):</span>'
+            f'<span class="output-value">{irradiance}</span></div>',
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            f'<div class="output-row"><span class="output-label">Avg Ambient Temp (°C):</span>'
+            f'<span class="output-value">{ambient_temp}</span></div>',
+            unsafe_allow_html=True
+        )
+
     if run_btn and irradiance is not None and ambient_temp is not None:
         daily_demand = HotWaterDemandCalculator.calculate_demand(building_type, quantity, desired_temp, occupancy_rate)
         sizing = SystemSizer().size_system(daily_demand, irradiance, ambient_temp)
