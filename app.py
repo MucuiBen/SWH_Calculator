@@ -10,7 +10,6 @@ from swh_core import (
 
 st.set_page_config(page_title="Solar Water Heating Sizing Tool", layout="wide")
 
-# --- Custom CSS for fonts, borders, value box width ---
 st.markdown("""
     <style>
         html, body, [class*="css"]  {
@@ -77,7 +76,8 @@ st.markdown("""
 ward_data = pd.read_csv("ward_solar_output.csv")
 ward_list = ward_data['Ward'].sort_values().unique().tolist()
 
-col1, col2, col3 = st.columns([1, 3, 2])
+# --- 4 Columns: Description, Inputs-Left, Inputs-Right, Outputs ---
+col1, col2, col3, col4 = st.columns([1, 2, 2, 2])
 
 # --- Column 1: App Description ---
 with col1:
@@ -94,14 +94,18 @@ with col1:
     </div>
     ''', unsafe_allow_html=True)
 
-# --- Column 2: Inputs ---
+# --- Input States ---
+state = st.session_state
+if "run_btn" not in state:
+    state.run_btn = False
+
+# --- Column 2: Inputs Left (Location + Hot Water Demand) ---
 with col2:
     st.markdown('''
     <div class="bordered-box">
-        <div class="column-heading">Select Required Inputs</div>
+        <div class="column-heading">General & Demand Inputs</div>
     ''', unsafe_allow_html=True)
 
-    # Admin Ward (dropdown with search)
     c1, c2 = st.columns([1, 2])
     with c1:
         st.write("Admin Ward :")
@@ -109,8 +113,7 @@ with col2:
         ward_selected_name = st.selectbox("", ward_list, key="ward_select")
     ward_selected = ward_data[ward_data['Ward'] == ward_selected_name].iloc[0] if ward_selected_name else None
 
-    # --- Hot Water Demand Input Parameters (horizontal label:value) ---
-    st.markdown('<div class="section-header">Hot Water Demand Input Parameters</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">Hot Water Demand</div>', unsafe_allow_html=True)
 
     c1, c2 = st.columns([1, 2])
     with c1:
@@ -144,8 +147,16 @@ with col2:
     with c2:
         occupancy_rate = st.number_input("", min_value=1, max_value=100, value=100, key="occupancy_rate") / 100
 
-    # --- System & Economic Inputs (horizontal label:value) ---
-    st.markdown('<div class="section-header">System Type & Economic Inputs Parameters</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- Column 3: Inputs Right (System, Economic & Fuel Type) ---
+with col3:
+    st.markdown('''
+    <div class="bordered-box">
+        <div class="column-heading">System & Economic Inputs</div>
+    ''', unsafe_allow_html=True)
+
+    st.markdown('<div class="section-header">System</div>', unsafe_allow_html=True)
 
     c1, c2 = st.columns([1, 2])
     with c1:
@@ -155,15 +166,17 @@ with col2:
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Electricity Tariff (Ksh/kWh) :")
-    with c2:
-        user_tariff = st.number_input("", min_value=5.0, max_value=100.0, value=28.69, key="user_tariff")
-
-    c1, c2 = st.columns([1, 2])
-    with c1:
         st.write("Tank Cost (Ksh/liter) :")
     with c2:
         user_cost_per_liter = st.number_input("", min_value=50, max_value=1000, value=585 if system_type == 'Flat-Plate Collector' else 565, key="cost_per_liter")
+
+    st.markdown('<div class="section-header">Economics</div>', unsafe_allow_html=True)
+
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        st.write("Electricity Tariff (Ksh/kWh) :")
+    with c2:
+        user_tariff = st.number_input("", min_value=5.0, max_value=100.0, value=28.69, key="user_tariff")
 
     c1, c2 = st.columns([1, 2])
     with c1:
@@ -189,7 +202,6 @@ with col2:
     with c2:
         discount_rate = st.number_input("", min_value=1, max_value=20, value=8, key="discount_rate") / 100
 
-    # --- Fuel Type (horizontal label:value) ---
     st.markdown('<div class="section-header">Fuel Type</div>', unsafe_allow_html=True)
 
     c1, c2 = st.columns([1, 2])
@@ -225,16 +237,17 @@ with col2:
         with c2:
             annual_lpg_savings = st.number_input("", min_value=1, max_value=5000, value=5000, key="lpg_savings")
 
-    run_btn = st.button("Run Full Analysis")
+    # Dedicated button in this column
+    state.run_btn = st.button("Run Full Analysis")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- Column 3: Outputs ---
-with col3:
+# --- Column 4: Outputs ---
+with col4:
     st.markdown('''
     <div class="bordered-box">
         <div class="column-heading">System Outputs</div>
     ''', unsafe_allow_html=True)
-    if run_btn and ward_selected is not None:
+    if state.run_btn and ward_selected is not None:
         avg_irradiance = ward_selected['Irradiance_kWh/m2/day']
         avg_temp = ward_selected['Ambient_Temperature_C']
         st.markdown(
