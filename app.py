@@ -286,7 +286,7 @@ with col4:
             ("Annual Maintenance (Ksh/yr)", f"{econ_result['maintenance_cost_annual']:,}"),
             ("Total CAPEX (Ksh)", f"{econ_result['capex']:,}"),
             ("Annual Savings (Ksh/yr)", f"{econ_result['annual_savings']:.2f}"),
-            ("Payback (yrs)", f"{econ_result['payback_period_years']:.2f}"),
+            ("Payback Period (yrs)", f"{econ_result['payback_period_years']:.2f}"),
             ("ROI (%)", f"{econ_result['roi_percent']:.1f}"),
             (f"NPV ({finance_years}yrs, Ksh)", f"{econ_result['npv_ksh']:.1f}"),
             ("Annual CO₂ Saved (kg)", f"{co2_saved:.1f}"),
