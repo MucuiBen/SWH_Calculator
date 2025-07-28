@@ -108,7 +108,7 @@ with col2:
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Admin Ward :")
+        st.write("Location(Admin Ward) :")
     with c2:
         ward_selected_name = st.selectbox("", ward_list, key="ward_select")
     ward_selected = ward_data[ward_data['Ward'] == ward_selected_name].iloc[0] if ward_selected_name else None
@@ -137,13 +137,13 @@ with col2:
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Hot Water Temp (°C) :")
+        st.write("Desired Hot Water Temp (°C) :")
     with c2:
         desired_temp = st.number_input("", min_value=35, max_value=80, value=60, key="desired_temp")
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Occupancy (%) :")
+        st.write("Occupancy rate (%) :")
     with c2:
         occupancy_rate = st.number_input("", min_value=1, max_value=100, value=100, key="occupancy_rate") / 100
 
@@ -166,7 +166,7 @@ with col3:
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Tank Cost (Ksh/liter) :")
+        st.write("SWH Tank Cost (Ksh/liter) :")
     with c2:
         user_cost_per_liter = st.number_input("", min_value=50, max_value=1000, value=585 if system_type == 'Flat-Plate Collector' else 565, key="cost_per_liter")
 
@@ -180,25 +180,25 @@ with col3:
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Installation (%) :")
+        st.write("Installation Cost (%) :")
     with c2:
         user_install_pct = st.number_input("", min_value=0, max_value=50, value=20, key="install_pct") / 100
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Annual Maintenance (%) :")
+        st.write("Annual Maintenance cost (in %) :")
     with c2:
         user_maint_pct = st.number_input("", min_value=0, max_value=20, value=5, key="maint_pct") / 100
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("NPV/Payback (years) :")
+        st.write("Desired Payback period (in years) :")
     with c2:
         finance_years = st.number_input("", min_value=1, max_value=15, value=7, key="finance_years")
 
     c1, c2 = st.columns([1, 2])
     with c1:
-        st.write("Discount Rate (%) :")
+        st.write("Discount/Inflation Rate (%) :")
     with c2:
         discount_rate = st.number_input("", min_value=1, max_value=20, value=8, key="discount_rate") / 100
 
