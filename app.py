@@ -38,7 +38,7 @@ st.markdown("""
             border: 3px solid #4682B4;
             padding: 18px 16px 16px 16px;
             border-radius: 12px;
-            background-color: #F8F9FA;
+            background-color: #81D5FB;
             margin-bottom: 20px;
         }
         .output-row {
@@ -77,11 +77,11 @@ with col1:
     st.markdown('<div class="column-heading">App Description</div>', unsafe_allow_html=True)
     st.markdown("""
     <ul>
-      <li>Based on Draft SWH Regulation 2024.</li>
-      <li>Tailored for the Kenyan market and regulations.</li>
-      <li>User can override all parameters.</li>
-      <li>Calculates system size, economics, and CO₂ reduction.</li>
-      <li>Results update as you change your inputs.</li>
+      <li>This Calculator is based on Draft Kenya SWH Regulation of 2024.</li>
+      <li>It's tailored for the Kenyan market.</li>
+      <li>User or designers can override all parameters.</li>
+      <li>The Tool Calculates system size, Economics Analysis, and CO₂ reduction Potential.</li>
+      <li> The Results update as you change your system input Paramters.</li>
     </ul>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
