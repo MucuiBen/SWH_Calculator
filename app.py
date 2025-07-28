@@ -25,7 +25,7 @@ st.markdown("""
             font-size: 20px !important;
             font-weight: bold !important;
             font-family: 'Times New Roman', Times, serif !important;
-            text-align: center;
+            text-align: left !important;
             margin-bottom: 15px;
         }
         .section-header {
@@ -33,6 +33,7 @@ st.markdown("""
             font-weight: bold !important;
             font-family: 'Times New Roman', Times, serif !important;
             margin-top: 10px;
+            text-align: left !important;
         }
         .bordered-box {
             border: 3px solid #4682B4;
@@ -68,6 +69,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ward_data = pd.read_csv("ward_solar_output.csv")
+ward_list = ward_data['Ward'].sort_values().unique().tolist()
 
 col1, col2, col3 = st.columns([2, 2, 3])
 
@@ -93,10 +95,9 @@ with col2:
         <div class="column-heading">Select Required Inputs</div>
     ''', unsafe_allow_html=True)
 
-    # Location
-    ward_query = st.text_input("Search Admin Ward", "")
-    matches = ward_data[ward_data['Ward'].str.contains(ward_query, case=False, na=False)]
-    ward_selected = matches.iloc[0] if len(matches) == 1 else None
+    # Location: Dropdown with search
+    ward_selected_name = st.selectbox("Search Admin Ward", ward_list, key="ward_select")
+    ward_selected = ward_data[ward_data['Ward'] == ward_selected_name].iloc[0] if ward_selected_name else None
 
     if ward_selected is not None:
         irradiance = ward_selected['Irradiance_kWh/m2/day']
@@ -116,27 +117,27 @@ with col2:
         'restaurant': 'Meals/day',
         'laundry': 'Kg laundry/day'
     }[building_type]
-    quantity = st.number_input(quantity_label, 1, value=4)
-    desired_temp = st.slider("Hot Water Temp (°C)", 35, 80, 60)
-    occupancy_rate = st.slider("Occupancy (%)", 50, 100, 100) / 100
+    quantity = st.number_input(quantity_label, min_value=1, value=4)
+    desired_temp = st.number_input("Hot Water Temp (°C)", min_value=35, max_value=80, value=60)
+    occupancy_rate = st.number_input("Occupancy (%)", min_value=1, max_value=100, value=100) / 100
 
     # --- System & Economic Inputs
     st.markdown('<div class="section-header">System Type & Economic Inputs Parameters</div>', unsafe_allow_html=True)
     system_type = st.selectbox("SWH System Type", ['Flat-Plate Collector', 'Vacuum Tubes Collector'])
-    user_tariff = st.number_input("Electricity Tariff (Ksh/kWh)", 5.0, 100.0, 28.69)
-    user_cost_per_liter = st.number_input("Tank Cost (Ksh/liter)", 50, 1000, 585 if system_type == 'Flat-Plate Collector' else 565)
-    user_install_pct = st.slider("Installation (%)", 0, 50, 20) / 100
-    user_maint_pct = st.slider("Annual Maintenance (%)", 0, 20, 5) / 100
-    finance_years = st.slider("NPV/Payback (years)", 1, 15, 7)
-    discount_rate = st.slider("Discount Rate (%)", 1, 20, 8) / 100
+    user_tariff = st.number_input("Electricity Tariff (Ksh/kWh)", min_value=5.0, max_value=100.0, value=28.69)
+    user_cost_per_liter = st.number_input("Tank Cost (Ksh/liter)", min_value=50, max_value=1000, value=585 if system_type == 'Flat-Plate Collector' else 565)
+    user_install_pct = st.number_input("Installation (%)", min_value=0, max_value=50, value=20) / 100
+    user_maint_pct = st.number_input("Annual Maintenance (%)", min_value=0, max_value=20, value=5) / 100
+    finance_years = st.number_input("NPV/Payback (years)", min_value=1, max_value=15, value=7)
+    discount_rate = st.number_input("Discount Rate (%)", min_value=1, max_value=20, value=8) / 100
 
     # --- Fuel Type
     st.markdown('<div class="section-header">Fuel Type</div>', unsafe_allow_html=True)
     fuel_type = st.selectbox("Fuel Replaced", ['electricity', 'lpg'])
-    grid_emission_start = st.number_input("Grid Start Emission Factor (ton/MWh)", 0.2, 1.0, 0.425) if fuel_type == 'electricity' else None
-    grid_emission_end = st.number_input("Grid End Emission Factor (ton/MWh)", 0.1, 1.0, 0.25) if fuel_type == 'electricity' else None
-    lpg_emission = st.number_input("LPG Emission Factor (kgCO2/kg)", 1.0, 5.0, 3.0) if fuel_type == 'lpg' else None
-    annual_lpg_savings = st.number_input("Annual LPG Savings (kg/year)", 1, 5000, 5000) if fuel_type == 'lpg' else None
+    grid_emission_start = st.number_input("Grid Start Emission Factor (ton/MWh)", min_value=0.2, max_value=1.0, value=0.425) if fuel_type == 'electricity' else None
+    grid_emission_end = st.number_input("Grid End Emission Factor (ton/MWh)", min_value=0.1, max_value=1.0, value=0.25) if fuel_type == 'electricity' else None
+    lpg_emission = st.number_input("LPG Emission Factor (kgCO2/kg)", min_value=1.0, max_value=5.0, value=3.0) if fuel_type == 'lpg' else None
+    annual_lpg_savings = st.number_input("Annual LPG Savings (kg/year)", min_value=1, max_value=5000, value=5000) if fuel_type == 'lpg' else None
 
     run_btn = st.button("Run Full Analysis")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -160,11 +161,11 @@ with col3:
                 installation_pct=user_install_pct
             ),
             discount_rate=discount_rate,
-            period=finance_years
+            period=int(finance_years)
         ).analyze(sizing['tank_size_liters'], annual_energy_savings)
 
         co2_saved = CarbonEmissionCalculator(
-            grid_emission_start=0.425, grid_emission_end=0.25, fuel_type=fuel_type, years=finance_years
+            grid_emission_start=0.425, grid_emission_end=0.25, fuel_type=fuel_type, years=int(finance_years)
         ).calculate_emissions_reduction(annual_energy_savings)
 
         outputs = [
