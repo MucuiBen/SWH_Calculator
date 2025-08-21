@@ -25,7 +25,7 @@ st.markdown("""
             font-size: 14px !important;
         }
         .main-title {
-            font-size: 28px !important;
+            font-size: 32px !important;
             font-weight: 800 !important;
             color: #002147 !important;
             margin: 0 0 8px 0 !important;
@@ -227,7 +227,7 @@ with col3:
         with c1:
             st.write("Grid Emission Factor (ton/MWh) :")
         with c2:
-            grid_emission = st.number_input("", min_value=0.1, max_value=1.0, value=0.35, key="grid_ef")
+            grid_emission = st.number_input("", min_value=0.1, max_value=1.0, value=0.42, key="grid_ef")
         lpg_emission = None
         annual_lpg_savings = None
     else:
