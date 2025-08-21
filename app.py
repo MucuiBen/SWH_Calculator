@@ -296,22 +296,19 @@ with col4:
         ).analyze(sizing['tank_size_liters'], annual_energy_savings)
 
         # Emissions — single grid factor for electricity; LPG path uses its inputs
-        if fuel_type == 'electricity':
-            co2_saved = CarbonEmissionCalculator(
-                grid_emission_start=grid_emission,
-                grid_emission_end=grid_emission,  # same value to keep compatibility
-                fuel_type=fuel_type,
-                years=finance_years
-            ).calculate_emissions_reduction(annual_energy_savings)
-        else:
-            co2_saved = CarbonEmissionCalculator(
-                grid_emission_start=None,
-                grid_emission_end=None,
-                fuel_type=fuel_type,
-                years=finance_years,
-                lpg_emission=lpg_emission,
-                annual_lpg_savings=annual_lpg_savings
-            ).calculate_emissions_reduction(annual_energy_savings)
+            # Emissions — single grid factor for electricity; LPG computed directly
+if fuel_type == 'electricity':
+    co2_saved = CarbonEmissionCalculator(
+        grid_emission_start=grid_emission,
+        grid_emission_end=grid_emission,  # same value to keep compatibility
+        fuel_type=fuel_type,
+        years=finance_years
+    ).calculate_emissions_reduction(annual_energy_savings)
+else:
+    # LPG path: compute CO₂ directly from user inputs
+    # lpg_emission: kgCO2 per kg LPG
+    # annual_lpg_savings: kg LPG saved per year
+    co2_saved = float(lpg_emission) * float(annual_lpg_savings)
 
         # Outputs table
         outputs = [
