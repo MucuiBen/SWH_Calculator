@@ -85,14 +85,13 @@ with col1:
         <div class="column-heading">Overview of the Calculator</div>
         <ul>
             <li>This Calculator is based on Draft Kenya SWH Regulation of 2024.</li>
-            <li>It's tailored for the Kenyan market.</li>
+            <li>It takes into account the Design requirements as per the Law.</li>
             <li>User or designers can override all parameters except where indicated under assumptions.</li>
             <li>The Tool Calculates system size, Economics Analysis, and CO₂ reduction Potential.</li>
             <li>The Results update as you change your system input parameters.</li>
         </ul>
         <div class="section-header">Key Assumptions</div>
         <ul>
-            <li>System Type: <b>Vacuum Tubes Collector</b> (default, not user-editable)</li>
             <li>Installation Cost: <b>20%</b> of equipment cost (not user-editable)</li>
             <li>Annual Maintenance: <b>5%</b> of equipment cost per year (not user-editable)</li>
             <li>Desired Payback Period: <b>5 years</b> (not user-editable)</li>
