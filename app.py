@@ -2,21 +2,22 @@
 # coding: utf-8
 
 # In[4]:
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[4]:
 import streamlit as st
 import pandas as pd
 import io
 from swh_core import (
     Constants, HotWaterDemandCalculator, SystemSizer, EconomicAnalyzer, CarbonEmissionCalculator
 )
+
+# ---------------------------
+# Page + Global Styles
+# ---------------------------
 st.set_page_config(page_title="Solar Water Heating Sizing Calculator", layout="wide")
 
-# --- Add Main Title ---
-st.markdown(
-    "<h1 style='text-align: center; font-family: Times New Roman, serif; color:#002147;'>"
-    "SWH Sizing and Economic Analysis Tool"
-    "</h1>",
-    unsafe_allow_html=True
-)
 st.markdown("""
     <style>
         html, body, [class*="css"]  {
@@ -24,8 +25,10 @@ st.markdown("""
             font-size: 14px !important;
         }
         .main-title {
-            font-size: 20px !important;
-            font-weight: bold !important;
+            font-size: 28px !important;
+            font-weight: 800 !important;
+            color: #002147 !important;
+            margin: 0 0 8px 0 !important;
         }
         .column-heading {
             font-size: 24px !important;
@@ -76,12 +79,45 @@ st.markdown("""
             min-width: 120px !important;
         }
         .stSelectbox, .stNumberInput { margin-bottom: 0px !important; }
+
+        /* Make the top-right Run button pop */
+        .stButton>button {
+            background-color: #ff7f50 !important; /* Coral */
+            border: 2px solid #d95f2a !important;
+            color: white !important;
+            font-weight: 700 !important;
+            border-radius: 10px !important;
+            padding: 0.6rem 1rem !important;
+        }
+        .stButton>button:hover {
+            filter: brightness(0.95);
+        }
     </style>
 """, unsafe_allow_html=True)
 
+# ---------------------------
+# Header: Title (left) + Run Button (right)
+# ---------------------------
+state = st.session_state
+if "run_btn" not in state:
+    state.run_btn = False
+
+hdr_left, hdr_right = st.columns([6, 2], vertical_alignment="center")
+with hdr_left:
+    st.markdown("<div class='main-title'>SWH Sizing and Economic Analysis Tool</div>", unsafe_allow_html=True)
+
+with hdr_right:
+    state.run_btn = st.button("Run Full Analysis", key="run_top", use_container_width=True)
+
+# ---------------------------
+# Data loading
+# ---------------------------
 ward_data = pd.read_csv("ward_solar_output.csv")
 ward_list = ward_data['Ward'].sort_values().unique().tolist()
 
+# ---------------------------
+# Four Columns Layout
+# ---------------------------
 col1, col2, col3, col4 = st.columns([2, 2, 2, 2])
 
 # --- Column 1: App Description & Assumptions ---
@@ -105,11 +141,6 @@ with col1:
         </ul>
     </div>
     ''', unsafe_allow_html=True)
-
-# --- Input States ---
-state = st.session_state
-if "run_btn" not in state:
-    state.run_btn = False
 
 # --- Column 2: Inputs Left (Location + Hot Water Demand) ---
 with col2:
@@ -161,7 +192,7 @@ with col2:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- Column 3: Inputs Right (Economic & Fuel Type only) ---
+# --- Column 3: Inputs Right (Economic & Fuel Type) ---
 with col3:
     st.markdown('''
     <div class="bordered-box">
@@ -190,25 +221,20 @@ with col3:
     with c2:
         fuel_type = st.selectbox("", ['electricity', 'lpg'], key="fuel_type")
 
+    # --- Single Grid Emission Factor for electricity; LPG inputs if selected ---
     if fuel_type == 'electricity':
         c1, c2 = st.columns([1, 2])
         with c1:
-            st.write("Grid Start Emission Factor (ton/MWh) :")
+            st.write("Grid Emission Factor (ton/MWh) :")
         with c2:
-            grid_emission_start = st.number_input("", min_value=0.2, max_value=1.0, value=0.425, key="grid_ef_start")
-        c1, c2 = st.columns([1, 2])
-        with c1:
-            st.write("Grid End Emission Factor (ton/MWh) :")
-        with c2:
-            grid_emission_end = st.number_input("", min_value=0.1, max_value=1.0, value=0.25, key="grid_ef_end")
+            grid_emission = st.number_input("", min_value=0.1, max_value=1.0, value=0.35, key="grid_ef")
         lpg_emission = None
         annual_lpg_savings = None
     else:
-        grid_emission_start = None
-        grid_emission_end = None
+        grid_emission = None
         c1, c2 = st.columns([1, 2])
         with c1:
-            st.write("LPG Emission Factor (kgCO2/kg) :")
+            st.write("LPG Emission Factor (kgCO₂/kg) :")
         with c2:
             lpg_emission = st.number_input("", min_value=1.0, max_value=5.0, value=3.0, key="lpg_emission")
         c1, c2 = st.columns([1, 2])
@@ -217,8 +243,7 @@ with col3:
         with c2:
             annual_lpg_savings = st.number_input("", min_value=1, max_value=5000, value=5000, key="lpg_savings")
 
-    # Button appears here
-    state.run_btn = st.button("Run Full Analysis")
+    # Removed the old middle-column run button (we now use the top-right one)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Column 4: Outputs ---
@@ -227,6 +252,7 @@ with col4:
     <div class="bordered-box">
         <div class="column-heading">System Outputs</div>
     ''', unsafe_allow_html=True)
+
     if state.run_btn and ward_selected is not None:
         avg_irradiance = ward_selected['Irradiance_kWh/m2/day']
         avg_temp = ward_selected['Ambient_Temperature_C']
@@ -238,20 +264,25 @@ with col4:
             f'<div class="metric-row"><span class="metric-label">Avg Ambient Temp (°C):</span>'
             f'<span class="metric-value">{avg_temp}</span></div>', unsafe_allow_html=True
         )
+
         # Guard for calculation
         if desired_temp == avg_temp:
             st.error("Desired Hot Water Temp cannot equal Average Ambient Temp.")
             st.stop()
-        # Use hidden defaults for system_type, install_pct, maint_pct, finance_years, discount_rate
+
+        # Fixed assumptions
         system_type = 'Vacuum Tubes Collector'
         installation_pct = 0.20
         maintenance_pct = 0.05
         finance_years = 5
         discount_rate = 0.08
 
+        # Demand, sizing, energy savings
         daily_demand = HotWaterDemandCalculator.calculate_demand(building_type, quantity, desired_temp, occupancy_rate)
         sizing = SystemSizer().size_system(daily_demand, avg_irradiance, avg_temp)
         annual_energy_savings = daily_demand * 365 * 1.162e-3 * (desired_temp - avg_temp)
+
+        # Economics
         econ_result = EconomicAnalyzer(
             system_type=system_type,
             constants=Constants(
@@ -263,10 +294,26 @@ with col4:
             discount_rate=discount_rate,
             period=finance_years
         ).analyze(sizing['tank_size_liters'], annual_energy_savings)
-        co2_saved = CarbonEmissionCalculator(
-            grid_emission_start=0.425, grid_emission_end=0.25, fuel_type=fuel_type, years=finance_years
-        ).calculate_emissions_reduction(annual_energy_savings)
 
+        # Emissions — single grid factor for electricity; LPG path uses its inputs
+        if fuel_type == 'electricity':
+            co2_saved = CarbonEmissionCalculator(
+                grid_emission_start=grid_emission,
+                grid_emission_end=grid_emission,  # same value to keep compatibility
+                fuel_type=fuel_type,
+                years=finance_years
+            ).calculate_emissions_reduction(annual_energy_savings)
+        else:
+            co2_saved = CarbonEmissionCalculator(
+                grid_emission_start=None,
+                grid_emission_end=None,
+                fuel_type=fuel_type,
+                years=finance_years,
+                lpg_emission=lpg_emission,
+                annual_lpg_savings=annual_lpg_savings
+            ).calculate_emissions_reduction(annual_energy_savings)
+
+        # Outputs table
         outputs = [
             ("Hot Water Demand (L/day):", f"{daily_demand:.2f}"),
             ("Collector Area (m²):", f"{sizing['collector_area_m2']}"),
@@ -287,6 +334,7 @@ with col4:
                 f'<span class="output-value">{value}</span></div>',
                 unsafe_allow_html=True
             )
+
         # Download button
         result_df = pd.DataFrame(outputs, columns=['Metric', 'Value'])
         csv_buffer = io.StringIO()
