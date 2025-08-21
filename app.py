@@ -8,9 +8,15 @@ import io
 from swh_core import (
     Constants, HotWaterDemandCalculator, SystemSizer, EconomicAnalyzer, CarbonEmissionCalculator
 )
-
 st.set_page_config(page_title="Solar Water Heating Sizing Calculator", layout="wide")
 
+# --- Add Main Title ---
+st.markdown(
+    "<h1 style='text-align: center; font-family: Times New Roman, serif; color:#002147;'>"
+    "SWH Sizing and Economic Analysis Tool"
+    "</h1>",
+    unsafe_allow_html=True
+)
 st.markdown("""
     <style>
         html, body, [class*="css"]  {
